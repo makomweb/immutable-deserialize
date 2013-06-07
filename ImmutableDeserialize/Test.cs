@@ -14,19 +14,16 @@ namespace ImmutableDeserialize
             context.Workspace.SetTasks(new [] { "hello", "world!" });
             Assert.AreEqual(2, context.Workspace.Tasks.Count());
 
-            const string path = @"c:\Temp\Workspace.xml";
-            using (var fs = File.OpenWrite(path))
+            using (var stream = new MemoryStream())
             {
-                context.Save(fs);
-            }
+                context.Save(stream);
 
-            context.Workspace.Reset();
+                context.Workspace.Reset();
+                stream.Seek(0, SeekOrigin.Begin);
 
-            Assert.AreEqual(0, context.Workspace.Tasks.Count());
+                Assert.AreEqual(0, context.Workspace.Tasks.Count());
 
-            using (var fs = File.OpenRead(path))
-            {
-                context.Reload(fs);
+                context.Reload(stream);
             }
 
             Assert.AreEqual(2, context.Workspace.Tasks.Count());
