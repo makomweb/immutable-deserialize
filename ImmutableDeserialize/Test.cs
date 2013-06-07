@@ -12,7 +12,10 @@ namespace ImmutableDeserialize
         {
             var context = new Context();
             context.Workspace.SetTasks(new [] { "hello", "world!" });
+            context.Workspace.SetDummy("hello");
+
             Assert.AreEqual(2, context.Workspace.Tasks.Count());
+            Assert.AreEqual("hello", context.Workspace.GetDummy());
 
             using (var stream = new MemoryStream())
             {
@@ -22,11 +25,13 @@ namespace ImmutableDeserialize
                 stream.Seek(0, SeekOrigin.Begin);
 
                 Assert.AreEqual(0, context.Workspace.Tasks.Count());
+                Assert.IsNull(context.Workspace.GetDummy());
 
                 context.Reload(stream);
             }
 
             Assert.AreEqual(2, context.Workspace.Tasks.Count());
+            Assert.AreEqual("hello", context.Workspace.GetDummy());
         }
     }
 }
